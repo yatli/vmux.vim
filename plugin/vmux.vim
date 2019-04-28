@@ -77,7 +77,7 @@ if !exists('g:vmux_no_default_bindings')
 
     tmap <PageUp> <C-\><C-n><PageUp>
     tmap <PageDown> <C-\><C-n><PageDown>
-    tmap <expr> <C-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+    tmap <expr> <A-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 endif
 
 autocmd TermOpen * call vmux#term_open()
