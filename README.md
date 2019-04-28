@@ -57,7 +57,6 @@ tmap <A-n> <C-\><C-N><Plug>(vmux-buf-next)
 tmap <A-p> <C-\><C-N><Plug>(vmux-buf-prev)
 tmap <A-w> <C-\><C-N><Plug>(vmux-buf-kill)
 
-
 " Quick window split
 nmap <A-s> <Plug>(vmux-split-horizontal)
 nmap <A-v> <Plug>(vmux-split-vertical)
@@ -66,4 +65,13 @@ nmap <A-q> <Plug>(vmux-split-close)
 tmap <A-s> <C-\><C-N><Plug>(vmux-split-horizontal)
 tmap <A-v> <C-\><C-N><Plug>(vmux-split-vertical)
 tmap <A-q> <C-\><C-N><Plug>(vmux-split-close)
+
+" Show/hide terminals
+
+imap <F11> <C-O><Plug>(vmux-term-toggle)
+vmap <F11> <C-O><Plug>(vmux-term-toggle)
+nmap <F11> <Plug>(vmux-term-toggle)
+tmap <F11> <C-\><C-n><Plug>(vmux-term-toggle)
+
 ```
+

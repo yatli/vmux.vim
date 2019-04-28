@@ -165,3 +165,6 @@ function! vmux#term_open()
     call vmux#term_setcolor()
 endfunction
 
+function! vmux#term_toggle()
+    TtoggleAll
+endfunction
