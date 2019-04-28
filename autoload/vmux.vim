@@ -166,5 +166,9 @@ function! vmux#term_open()
 endfunction
 
 function! vmux#term_toggle()
-    TtoggleAll
+    if g:neoterm.has_any()
+        TtoggleAll
+    else
+        below Ttoggle
+    endif
 endfunction
