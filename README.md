@@ -14,7 +14,7 @@ Better window management for Vim.
 ### Installation
 
 Use a plugin manager, for example [vim-plug](https://github.com/junegunn/vim-plug):
-```
+```vimL
 plug 'yatli/vmux.vim'
 ```
 
