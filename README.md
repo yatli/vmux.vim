@@ -5,8 +5,12 @@ Better window management for Vim.
 ### Features
 
 - Sane window resize commands mimicking the `tmux` logic.
+- Terminal layout management like `tmux`
+- Buffer management like `tmux`
 - Switch between buffers without caveats -- the buffers are categorized as `normal`, `terminal` and `other` and one category won't interfere with another.
-- Again: kill buffers/terminals without interference.
+  - example: switching buffer with `(vmux-buf-next)` in `NERDTree` or `help` has no effect.
+  - example: switching buffer in a `terminal` moves to the next opened terminal, not a `normal` buffer.
+- Kill buffers/terminals without interference.
 - Split window. If splitting a terminal, spawn a new shell.
 - Automatically setup terminal colors independent of color scheme.
 - Automatically enter insert mode when entering a terminal buffer.
@@ -15,7 +19,11 @@ Better window management for Vim.
 
 Use a plugin manager, for example [vim-plug](https://github.com/junegunn/vim-plug):
 ```vimL
-plug 'yatli/vmux.vim'
+"Dependencies
+Plug 'qpkorr/vim-bufkill'
+Plug 'kassio/neoterm'
+" --------------------
+Plug 'yatli/vmux.vim'
 ```
 
 ### Recommended bindings
