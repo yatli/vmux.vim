@@ -28,6 +28,9 @@ Plug 'yatli/vmux.vim'
 
 ### Recommended bindings
 
+The recommended bindings are enabled by default.
+Use `let g:vmux_no_default_bindings = 1` to disable them.
+
 ```vimL
 " Quick window adjustment
 nmap <A-Up>    <Plug>(vmux-resize-up)
