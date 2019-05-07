@@ -77,6 +77,7 @@ function! vmux#split_h()
     elseif &buftype == 'terminal'
         belowright Tnew
     else
+        bdelete
     endif
 endfunction
 
@@ -86,44 +87,87 @@ function! vmux#split_v()
     elseif &buftype == 'terminal'
         vertical Tnew
     else
+        bdelete
     endif
 endfunction
 
+function! s:get_filebuf_win_count()
+    " Iterate through the windows and see if I'm the last one with listed
+    " buffer shown (rules out NERDTree, terminal, help etc.)
+    let winid  = winnr('$')
+    let listed = 0
+
+    while winid > 0
+        let win_bufnr = winbufnr(winid)
+        if buflisted(win_bufnr)
+            let listed = listed + 1
+        endif
+        let winid = winid - 1
+    endwhile
+endfunction
+
+" split_close ensures that the vim instance will not exit
+" after the call. It's like the "do not close browser after
+" closing the last tab" feature.
 function! vmux#split_close()
-    if &buftype == ''
-        wincmd c
-    elseif &buftype == 'terminal'
+
+    " for terminal we always hide it
+    if &buftype == 'terminal'
         hide
-    else
+        return
     endif
+
+    " more than one buf = safe
+    " only one "solid" buf, or none: = tricky! only proceed if we are "not important".
+    " if we are important, just kill the buffer
+
+    if s:get_filebuf_win_count() > 1
+        wincmd c
+    elseif &buflisted && bufname('%') != ''
+        " tricky! 
+        bdelete
+    elseif &buflisted && bufname('%') == ''
+        " I'm the last "solid" window but it's a [NO NAME] buffer
+        " do nothing
+    else
+        wincmd c
+    endif
+
 endfunction
 
 function! vmux#buf_kill()
-    if &buftype == ''
+    " only kill if the buffer is a listed buffer
+    " otherwise, either hide or close the window
+    if &buflisted && bufname('%') != ''
         BD
+    elseif &buflisted && bufname('%' == '')
+        " do nothing
     elseif &buftype == 'terminal'
         hide
     else
+        call vmux#split_close()
     endif
 endfunction
 
 function! vmux#buf_next()
-    if &buftype == ''
+    if &buflisted
         bnext
     elseif &buftype == 'terminal'
         call neoterm#next()
         startinsert
     else
+        call vmux#split_close()
     endif
 endfunction
 
 function! vmux#buf_prev()
-    if &buftype == ''
+    if &buflisted
         bprev
     elseif &buftype == 'terminal'
         call neoterm#previous()
         startinsert
     else
+        call vmux#split_close()
     endif
 endfunction
 
@@ -153,6 +197,8 @@ function! vmux#buf_enter()
     if &buftype == 'terminal'
         startinsert
         call vmux#term_setcolor()
+    elseif &buftype == 'nofile'
+        " TODO kill the buffer
     endif
 endfunction
 
