@@ -72,28 +72,22 @@ function! vmux#window_pushright()
 endfunction
 
 function! vmux#split_h()
-    if &buftype == ''
-        wincmd s
-    elseif &buftype == 'terminal'
+    if &buftype == 'terminal'
         belowright Tnew
     else
-        bdelete
+        wincmd s
     endif
 endfunction
 
 function! vmux#split_v()
-    if &buftype == ''
-        wincmd v
-    elseif &buftype == 'terminal'
+    if &buftype == 'terminal'
         vertical Tnew
     else
-        bdelete
+        wincmd v
     endif
 endfunction
 
 function! s:get_filebuf_win_count()
-    " Iterate through the windows and see if I'm the last one with listed
-    " buffer shown (rules out NERDTree, terminal, help etc.)
     let winid  = winnr('$')
     let listed = 0
 
@@ -104,6 +98,20 @@ function! s:get_filebuf_win_count()
         endif
         let winid = winid - 1
     endwhile
+    return listed
+endfunction
+
+function! s:get_filebuf_count()
+    let bufid  = bufnr('$')
+    let listed = 0
+
+    while bufid > 0
+        if buflisted(bufid)
+            let listed = listed + 1
+        endif
+        let bufid = bufid - 1
+    endwhile
+    return listed
 endfunction
 
 " split_close ensures that the vim instance will not exit
@@ -117,20 +125,17 @@ function! vmux#split_close()
         return
     endif
 
-    " more than one buf = safe
+    " Checking the number of "solid" windows and see if I'm the last one with listed
+    " buffer shown (rules out NERDTree, terminal, help etc.)
+    " more than one buf window = safe
     " only one "solid" buf, or none: = tricky! only proceed if we are "not important".
-    " if we are important, just kill the buffer
+    " if we are "solid", just kill the buffer
+    " note: "solid" == "buflisted"
 
-    if s:get_filebuf_win_count() > 1
+    if s:get_filebuf_win_count() > 1 || !&buflisted
         wincmd c
-    elseif &buflisted && bufname('%') != ''
-        " tricky! 
-        bdelete
-    elseif &buflisted && bufname('%') == ''
-        " I'm the last "solid" window but it's a [NO NAME] buffer
-        " do nothing
     else
-        wincmd c
+        call vmux#buf_kill()
     endif
 
 endfunction
@@ -138,13 +143,22 @@ endfunction
 function! vmux#buf_kill()
     " only kill if the buffer is a listed buffer
     " otherwise, either hide or close the window
-    if &buflisted && bufname('%') != ''
-        BD
-    elseif &buflisted && bufname('%' == '')
-        " do nothing
+    if &buflisted
+        " https://github.com/neovim/neovim/issues/2434
+        setl bufhidden=delete 
+        if s:get_filebuf_count() > 1
+            bnext
+        else
+            " tricky! if we "bdelete", the window will be closed.
+            " if we "bnext", nothing happens.
+            " so we force a "enew".
+            enew!
+        endif
     elseif &buftype == 'terminal'
         hide
     else
+        " other non-listed buffers.
+        " we assume there will never be a single non-listed buffer on screen.
         call vmux#split_close()
     endif
 endfunction
