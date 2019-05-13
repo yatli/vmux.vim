@@ -55,12 +55,6 @@ if !exists('g:vmux_no_default_bindings')
     tmap <A-p> <C-\><C-N><Plug>(vmux-buf-prev)
     tmap <A-w> <C-\><C-N><Plug>(vmux-buf-kill)
 
-    imap <F5> <C-O>:TREPLSendLine<CR>
-    imap <C-F5> <C-O>:TREPLSendFile<CR>
-    nmap <F5> :TREPLSendLine<CR>
-    nmap <C-F5> :TREPLSendFile<CR>
-    vmap <F5> :<BS><BS><BS><BS><BS>TREPLSendSelection<CR>
-
     " Quick window split
     nmap <A-s> <Plug>(vmux-split-horizontal)
     nmap <A-v> <Plug>(vmux-split-vertical)
