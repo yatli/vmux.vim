@@ -186,18 +186,22 @@ function! vmux#buf_prev()
 endfunction
 
 function! vmux#term_setcolor()
+    " TODO sometimes the native colorscheme works just well enough and we don't
+    " have to patch it... find out the certificate
+
     " focused term
-    highlight Vmux           guibg=#000000 guifg=#EDEDED ctermbg=0 ctermfg=7
+    "highlight Vmux           guibg=#000000 guifg=#EDEDED ctermbg=0 ctermfg=7
     " inactive cursor line
-    highlight VmuxCursorLine guibg=#101010 guifg=#EDEDED ctermbg=9 ctermfg=7
+    "highlight VmuxCursorLine guibg=#101010 guifg=#EDEDED ctermbg=9 ctermfg=7
     " inactive
-    highlight VmuxNC         guibg=#101010 guifg=#EDEDED ctermbg=8 ctermfg=7
+    "highlight VmuxNC         guibg=#101010 guifg=#EDEDED ctermbg=8 ctermfg=7
     " cursor
-    highlight VmuxCursor     guibg=#ED3015 guifg=#000000 ctermbg=12 ctermfg=0
-    highlight VmuxCursorNC   guibg=#404040 guifg=#EDEDED ctermbg=8 ctermfg=7
+    "highlight VmuxCursor     guibg=#ED3015 guifg=#000000 ctermbg=12 ctermfg=0
+    "highlight VmuxCursorNC   guibg=#404040 guifg=#EDEDED ctermbg=8 ctermfg=7
 
     " window-local highlight
-    set winhighlight=Normal:Vmux,NonText:VmuxCursorLine,NormalNC:VmuxNC,CursorLine:VmuxCursorLine,TermCursor:VmuxCursor,TermCursorNC:VmuxCursorNC
+    "set winhighlight=Normal:Vmux,NonText:VmuxCursorLine,NormalNC:VmuxNC,CursorLine:VmuxCursorLine,TermCursor:VmuxCursor,TermCursorNC:VmuxCursorNC
+
     " disable the bright cursor line (I'm not sure how to set its color as of yet)
     " see: https://github.com/neovim/neovim/issues/2259
     setlocal nocursorline
@@ -208,7 +212,7 @@ function! vmux#term_setcolor()
 endfunction
 
 function! vmux#buf_add()
-    if &previewwindow || &buftype == 'nofile' || &buftype == 'quickfix' 
+    if &previewwindow || &buftype == 'nofile' || &buftype == 'quickfix'  || &buftype == 'help'
         nnoremap <buffer> q :call vmux#split_close()<CR>
         setlocal nobuflisted
     endif
