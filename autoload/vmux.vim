@@ -207,12 +207,19 @@ function! vmux#term_setcolor()
     " let g:terminal_color_0 = 
 endfunction
 
+function! vmux#buf_add()
+    if &previewwindow || &buftype == 'nofile' || &buftype == 'quickfix' 
+        nnoremap <buffer> q :call vmux#split_close()<CR>
+        setlocal nobuflisted
+    endif
+endfunction
+
 function! vmux#buf_enter()
     if &buftype == 'terminal'
         startinsert
         call vmux#term_setcolor()
     elseif &buftype == 'nofile'
-        " TODO kill the buffer
+        " nothing
     endif
 endfunction
 

@@ -76,6 +76,8 @@ endif
 
 autocmd TermOpen * call vmux#term_open()
 autocmd BufEnter * call vmux#buf_enter()
+autocmd BufAdd   * call vmux#buf_add()
 autocmd BufLeave * call vmux#buf_leave()
+autocmd FileType help,qf call vmux#buf_add() 
 
 let g:vmux_init = 1
