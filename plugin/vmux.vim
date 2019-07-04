@@ -53,6 +53,7 @@ if !exists('g:vmux_no_default_bindings')
     nmap <C-A-l> <C-w>L
 
     nmap <C-A-t> :tabnew<CR>
+    nmap <C-A-q> :tabclose<CR>
     nmap <C-A-n> :tabnext<CR>
     nmap <C-A-p> :tabprevious<CR>
 
