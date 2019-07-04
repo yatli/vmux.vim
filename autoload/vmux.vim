@@ -114,6 +114,21 @@ function! s:get_filebuf_count()
     return listed
 endfunction
 
+if !exists("g:vmux_tab_buf_map")
+    let g:vmux_tab_buf_map = {}
+endif
+
+function! s:ensure_tabmap()
+    " see: https://vi.stackexchange.com/questions/4091/how-to-bind-a-set-of-buffers-to-a-tab
+    let tabid = tabpagenr()
+
+    if !has_key(g:vmux_tab_buf_map, tabid)
+        let g:vmux_tab_buf_map[tabid] = []
+    endif
+    return g:vmux_tab_buf_map[tabid]
+endfunction
+
+
 " split_close ensures that the vim instance will not exit
 " after the call. It's like the "do not close browser after
 " closing the last tab" feature.
@@ -165,7 +180,19 @@ endfunction
 
 function! vmux#buf_next()
     if &buflisted
-        bnext
+        let tabmap = s:ensure_tabmap()
+        let tabmaplen = len(tabmap)
+        if tabmaplen == 0
+            return
+        endif
+        let bufid = bufnr("%")
+        let bufidx = index(tabmap, bufid)
+        if bufidx < 0
+            echo "vmux#buf_next(): bufid " . bufid . " not found, tabmap: " . string(tabmap)
+            let bufidx = 0
+        endif
+        let bufidx = (bufidx+1) % tabmaplen
+        execute "b " . tabmap[bufidx]
     elseif &buftype == 'terminal'
         call neoterm#next()
         startinsert
@@ -176,7 +203,19 @@ endfunction
 
 function! vmux#buf_prev()
     if &buflisted
-        bprev
+        let tabmap = s:ensure_tabmap()
+        let tabmaplen = len(tabmap)
+        if tabmaplen == 0
+            return
+        endif
+        let bufid = bufnr("%")
+        let bufidx = index(tabmap, bufid)
+        if bufidx < 0
+            echo "vmux#buf_prev(): bufid " . bufid . " not found, tabmap: " . string(tabmap)
+            let bufidx = 0
+        endif
+        let bufidx = (bufidx-1+tabmaplen) % tabmaplen
+        execute "b " . tabmap[bufidx]
     elseif &buftype == 'terminal'
         call neoterm#previous()
         startinsert
@@ -211,18 +250,38 @@ function! vmux#term_setcolor()
     " let g:terminal_color_0 = 
 endfunction
 
-function! vmux#buf_add()
+function! vmux#buf_delete(bufid)
+    let tabmap = s:ensure_tabmap()
+
+    let bufid = str2nr(a:bufid)
+    let bufidx = index(tabmap, bufid)
+    if bufidx >= 0
+        call remove(tabmap, bufidx)
+    endif
+endfunction
+
+function! vmux#buf_add(bufid)
     if &previewwindow || &buftype == 'nofile' || &buftype == 'quickfix'  || &buftype == 'help'
         nnoremap <buffer> q :call vmux#split_close()<CR>
         setlocal nobuflisted
+        return
+    endif
+
+    let tabmap = s:ensure_tabmap()
+    let bufid = str2nr(a:bufid)
+    if index(tabmap, bufid) < 0
+        let g:vmux_tab_buf_map[tabpagenr()] = add(tabmap, bufid)
     endif
 endfunction
+
 
 function! vmux#buf_enter()
     if &buftype == 'terminal'
         startinsert
         call vmux#term_setcolor()
     elseif &buftype == 'nofile'
+        " nothing
+    elseif &buflisted
         " nothing
     endif
 endfunction

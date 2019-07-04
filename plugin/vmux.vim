@@ -47,6 +47,15 @@ if !exists('g:vmux_no_default_bindings')
     nmap <A-k> <C-w>k
     nmap <A-l> <C-w>l
 
+    nmap <C-A-h> <C-w>H
+    nmap <C-A-j> <C-w>J
+    nmap <C-A-k> <C-w>K
+    nmap <C-A-l> <C-w>L
+
+    nmap <C-A-t> :tabnew<CR>
+    nmap <C-A-n> :tabnext<CR>
+    nmap <C-A-p> :tabprevious<CR>
+
     " Quick buffer switch
     nmap <A-n> <Plug>(vmux-buf-next)
     nmap <A-p> <Plug>(vmux-buf-prev)
@@ -74,10 +83,13 @@ if !exists('g:vmux_no_default_bindings')
     tmap <expr> <A-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 endif
 
-autocmd TermOpen * call vmux#term_open()
-autocmd BufEnter * call vmux#buf_enter()
-autocmd BufAdd   * call vmux#buf_add()
-autocmd BufLeave * call vmux#buf_leave()
-autocmd FileType help,qf call vmux#buf_add() 
+augroup VmuxVim
+    autocmd TermOpen  * call vmux#term_open()
+    autocmd BufEnter  * call vmux#buf_enter()
+    autocmd BufAdd    * call vmux#buf_add(expand('<abuf>'))
+    autocmd BufDelete * call vmux#buf_delete(expand('<abuf>'))
+    autocmd BufLeave  * call vmux#buf_leave()
+    autocmd FileType help,qf call vmux#buf_add('-1') 
+augroup end
 
 let g:vmux_init = 1
