@@ -134,11 +134,8 @@ endfunction
 " closing the last tab" feature.
 function! vmux#split_close()
 
-    " for terminal we always hide it
-    if &buftype == 'terminal'
-        hide
-        return
-    endif
+    let fbcnt  = s:get_filebuf_count()
+    let wincnt = winnr('$')
 
     " Checking the number of "solid" windows and see if I'm the last one with listed
     " buffer shown (rules out NERDTree, terminal, help etc.)
@@ -147,10 +144,16 @@ function! vmux#split_close()
     " if we are "solid", just kill the buffer
     " note: "solid" == "buflisted"
 
-    if s:get_filebuf_win_count() > 1 || !&buflisted
-        wincmd c
+    if s:get_filebuf_win_count() > 1 || (!&buflisted && wincnt > 1)
+        " for terminal we always try to hide it
+        if &buftype == 'terminal'
+            hide
+        else
+            wincmd c
+        endif
     else
-        call vmux#buf_kill()
+        " only one split left, do nothing
+        return
     endif
 
 endfunction
@@ -158,22 +161,47 @@ endfunction
 function! vmux#buf_kill()
     " only kill if the buffer is a listed buffer
     " otherwise, either hide or close the window
+
+    let fbcnt  = s:get_filebuf_count()
+    let wincnt = winnr('$')
+    let bufid = bufnr('%')
+    let winid = winnr()
+
     if &buflisted
         " https://github.com/neovim/neovim/issues/2434
-        setl bufhidden=delete 
-        if s:get_filebuf_count() > 1
-            bnext
+        setlocal bufhidden=delete 
+        if fbcnt > 1
+            " tricky! if the buffer is currently being displayed in another window, bnext doesn't kill
+            " let's bnext all the instances then
+            while wincnt > 0
+                if winbufnr(wincnt) == bufid
+                    execute wincnt . "wincmd w"
+                    call vmux#buf_next()
+                endif
+                let wincnt = wincnt - 1
+            endwhile
         else
             " tricky! if we "bdelete", the window will be closed.
             " if we "bnext", nothing happens.
             " so we force a "enew".
-            enew!
+            while wincnt > 0
+                if winbufnr(wincnt) == bufid
+                    execute wincnt . "wincmd w"
+                    enew!
+                endif
+                let wincnt = wincnt - 1
+            endwhile
         endif
+        execute winid . "wincmd w"
     elseif &buftype == 'terminal'
-        hide
+        if wincnt > 1
+            hide
+        else
+            " tricky! we cannot close the last window
+            return
+        endif
     else
         " other non-listed buffers.
-        " we assume there will never be a single non-listed buffer on screen.
         call vmux#split_close()
     endif
 endfunction
@@ -274,15 +302,14 @@ function! vmux#buf_add(bufid)
     endif
 endfunction
 
-
 function! vmux#buf_enter()
     if &buftype == 'terminal'
         startinsert
         call vmux#term_setcolor()
     elseif &buftype == 'nofile'
-        " nothing
+        call vmux#buf_add(bufnr('%'))
     elseif &buflisted
-        " nothing
+        call vmux#buf_add(bufnr('%'))
     endif
 endfunction
 
