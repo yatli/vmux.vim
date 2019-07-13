@@ -18,7 +18,6 @@ noremap <Plug>(vmux-split-close)      :call vmux#split_close()<CR>
 noremap <Plug>(vmux-term-toggle)      :call vmux#term_toggle()<CR>
 
 function! s:key_available(name)
-    echomsg a:name . " -> " . maparg(a:name)
     return (maparg(a:name) == "")
 endfunction
 
