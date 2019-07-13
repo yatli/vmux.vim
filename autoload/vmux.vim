@@ -202,7 +202,11 @@ function! vmux#buf_kill()
         endif
     else
         " other non-listed buffers.
-        call vmux#split_close()
+        if fbcnt > 0
+            bdelete
+        else
+            call vmux#split_close()
+        endif
     endif
 endfunction
 
@@ -272,9 +276,8 @@ function! vmux#term_setcolor()
     " disable the bright cursor line (I'm not sure how to set its color as of yet)
     " see: https://github.com/neovim/neovim/issues/2259
     setlocal nocursorline
-    " set the terminal color scheme now
+    " hotfix the terminal color scheme
     " see: https://github.com/neovim/neovim/issues/4696
-    " TODO match the console color scheme
     " let g:terminal_color_0 = 
 endfunction
 
