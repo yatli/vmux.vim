@@ -17,18 +17,43 @@ noremap <Plug>(vmux-split-vertical)   :call vmux#split_v()<CR>
 noremap <Plug>(vmux-split-close)      :call vmux#split_close()<CR>
 noremap <Plug>(vmux-term-toggle)      :call vmux#term_toggle()<CR>
 
-if !exists('g:vmux_no_default_bindings')
+function! s:key_available(name)
+    echomsg a:name . " -> " . maparg(a:name)
+    return (maparg(a:name) == "")
+endfunction
+
+let s:arrows_available =
+            \ s:key_available("<A-Up>") &&
+            \ s:key_available("<A-Down>") &&
+            \ s:key_available("<A-Left>") &&
+            \ s:key_available("<A-Right>")
+
+if !exists('g:vmux_no_default_bindings') && s:arrows_available
 
     " Quick window adjustment
-    nnoremap <A-Up>    <Plug>(vmux-resize-up)
-    nnoremap <A-Down>  <Plug>(vmux-resize-down)
-    nnoremap <A-Left>  <Plug>(vmux-resize-left)
-    nnoremap <A-Right> <Plug>(vmux-resize-right)
+    nmap <A-Up>    <Plug>(vmux-resize-up)
+    nmap <A-Down>  <Plug>(vmux-resize-down)
+    nmap <A-Left>  <Plug>(vmux-resize-left)
+    nmap <A-Right> <Plug>(vmux-resize-right)
 
-    tnoremap <A-Up>    <C-\><C-N><Plug>(vmux-resize-up)i
-    tnoremap <A-Down>  <C-\><C-N><Plug>(vmux-resize-down)i
-    tnoremap <A-Left>  <C-\><C-N><Plug>(vmux-resize-left)i
-    tnoremap <A-Right> <C-\><C-N><Plug>(vmux-resize-right)i
+    tmap <A-Up>    <C-\><C-N><Plug>(vmux-resize-up)i
+    tmap <A-Down>  <C-\><C-N><Plug>(vmux-resize-down)i
+    tmap <A-Left>  <C-\><C-N><Plug>(vmux-resize-left)i
+    tmap <A-Right> <C-\><C-N><Plug>(vmux-resize-right)i
+
+endif
+
+let s:hjkl_available =
+            \ s:key_available("<A-h>") &&
+            \ s:key_available("<A-j>") &&
+            \ s:key_available("<A-k>") &&
+            \ s:key_available("<A-l>") &&
+            \ s:key_available("<C-A-h>") &&
+            \ s:key_available("<C-A-j>") &&
+            \ s:key_available("<C-A-k>") &&
+            \ s:key_available("<C-A-l>")
+
+if !exists('g:vmux_no_default_bindings') && s:hjkl_available
 
     " Quick movement between windows
     " To use `ALT+{h,j,k,l}` to navigate windows from any mode: >
@@ -52,32 +77,45 @@ if !exists('g:vmux_no_default_bindings')
     nnoremap <C-A-k> <C-w>K
     nnoremap <C-A-l> <C-w>L
 
+endif
+
+let s:tqnpwsv_available =
+            \ s:key_available("<A-t>") &&
+            \ s:key_available("<A-q>") &&
+            \ s:key_available("<A-n>") &&
+            \ s:key_available("<A-p>") &&
+            \ s:key_available("<A-w>") &&
+            \ s:key_available("<A-s>") &&
+            \ s:key_available("<A-v>")
+
+if !exists('g:vmux_no_default_bindings') && s:tqnpwsv_available
+
     nnoremap <C-A-t> :tabnew<CR>
     nnoremap <C-A-q> :tabclose<CR>
     nnoremap <C-A-n> :tabnext<CR>
     nnoremap <C-A-p> :tabprevious<CR>
 
     " Quick buffer switch
-    nnoremap <A-n> <Plug>(vmux-buf-next)
-    nnoremap <A-p> <Plug>(vmux-buf-prev)
-    nnoremap <A-w> <Plug>(vmux-buf-kill)
-    tnoremap <A-n> <C-\><C-N><Plug>(vmux-buf-next)
-    tnoremap <A-p> <C-\><C-N><Plug>(vmux-buf-prev)
-    tnoremap <A-w> <C-\><C-N><Plug>(vmux-buf-kill)
+    nmap <A-n> <Plug>(vmux-buf-next)
+    nmap <A-p> <Plug>(vmux-buf-prev)
+    nmap <A-w> <Plug>(vmux-buf-kill)
+    tmap <A-n> <C-\><C-N><Plug>(vmux-buf-next)
+    tmap <A-p> <C-\><C-N><Plug>(vmux-buf-prev)
+    tmap <A-w> <C-\><C-N><Plug>(vmux-buf-kill)
 
     "Quick window split
-    nnoremap <A-s> <Plug>(vmux-split-horizontal)
-    nnoremap <A-v> <Plug>(vmux-split-vertical)
-    nnoremap <A-q> <Plug>(vmux-split-close)
+    nmap <A-s> <Plug>(vmux-split-horizontal)
+    nmap <A-v> <Plug>(vmux-split-vertical)
+    nmap <A-q> <Plug>(vmux-split-close)
 
-    tnoremap <A-s> <C-\><C-N><Plug>(vmux-split-horizontal)
-    tnoremap <A-v> <C-\><C-N><Plug>(vmux-split-vertical)
-    tnoremap <A-q> <C-\><C-N><Plug>(vmux-split-close)
+    tmap <A-s> <C-\><C-N><Plug>(vmux-split-horizontal)
+    tmap <A-v> <C-\><C-N><Plug>(vmux-split-vertical)
+    tmap <A-q> <C-\><C-N><Plug>(vmux-split-close)
 
-    inoremap <F11> <C-O><Plug>(vmux-term-toggle)
-    vnoremap <F11> <C-O><Plug>(vmux-term-toggle)
-    nnoremap <F11> <Plug>(vmux-term-toggle)
-    tnoremap <F11> <C-\><C-n><Plug>(vmux-term-toggle)
+    imap <F11> <C-O><Plug>(vmux-term-toggle)
+    vmap <F11> <C-O><Plug>(vmux-term-toggle)
+    nmap <F11> <Plug>(vmux-term-toggle)
+    tmap <F11> <C-\><C-n><Plug>(vmux-term-toggle)
 
     tnoremap <PageUp> <C-\><C-n><PageUp>
     tnoremap <PageDown> <C-\><C-n><PageDown>
