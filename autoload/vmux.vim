@@ -301,7 +301,12 @@ function! vmux#buf_add(bufid)
     let tabmap = s:ensure_tabmap()
     let bufid = str2nr(a:bufid)
     if index(tabmap, bufid) < 0
-        let g:vmux_tab_buf_map[tabpagenr()] = add(tabmap, bufid)
+        let szmap = len(tabmap)
+        let inspos = 0
+        while inspos < szmap && tabmap[inspos] < bufid
+            let inspos = inspos + 1
+        endwhile
+        let g:vmux_tab_buf_map[tabpagenr()] = insert(tabmap, bufid, inspos)
     endif
 endfunction
 
