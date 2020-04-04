@@ -14,6 +14,7 @@ Better window management for Vim.
 - Split window. If splitting a terminal, spawn a new shell.
 - Automatically setup terminal colors independent of color scheme.
 - Automatically enter insert mode when entering a terminal buffer.
+  - If the user previously leaves the terminal buffer in normal mode (i.e. scrolling), it does not start insert mode, and thus preserves scroll position.
 
 ### Installation
 

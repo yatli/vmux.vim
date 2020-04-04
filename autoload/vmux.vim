@@ -118,6 +118,10 @@ if !exists("g:vmux_tab_buf_map")
     let g:vmux_tab_buf_map = {}
 endif
 
+if !exists("g:vmux_term_modes")
+    let g:vmux_term_modes = {}
+endif
+
 function! s:ensure_tabmap()
     " see: https://vi.stackexchange.com/questions/4091/how-to-bind-a-set-of-buffers-to-a-tab
     let tabid = tabpagenr()
@@ -311,18 +315,35 @@ function! vmux#buf_add(bufid)
 endfunction
 
 function! vmux#buf_enter()
-    if &buftype == 'terminal'
-        startinsert
-        call vmux#term_setcolor()
-    elseif &buftype == 'nofile'
-        call vmux#buf_add(bufnr('%'))
-    elseif &buflisted
-        call vmux#buf_add(bufnr('%'))
+  let bufid = bufnr('%')
+  if &buftype == 'terminal'
+    if !has_key(g:vmux_term_modes, bufid)
+      g:vmux_term_modes[bufid] = 'i'
     endif
+
+    if g:vmux_term_modes[bufid] == 'i'
+      startinsert
+    endif
+    call vmux#term_setcolor()
+  elseif &buftype == 'nofile'
+    call vmux#buf_add(bufid)
+  elseif &buflisted
+    call vmux#buf_add(bufid)
+  endif
 endfunction
 
 function! vmux#buf_leave()
-    " TODO nothing siginificant here atm
+  if &buftype == 'terminal'
+    " condition 1: cursor is at the last line
+    " condition 2: the buffer is not long enough to fill the whole window,
+    " and therefore if exiting from insert mode, it's impossible that the
+    " cursor is placed at the last line of the buffer.
+    let ll = line('$')
+    let cl = line('.')
+    let h = winheight('%')
+    let m = (ll <= h || cl == ll) ?  'i' : 'n'
+    let g:vmux_term_modes[bufnr('%')] = m
+  endif
 endfunction
 
 function! vmux#term_open()
