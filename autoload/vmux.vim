@@ -329,6 +329,7 @@ function! vmux#buf_enter()
     call vmux#buf_add(bufid)
   elseif &buflisted
     call vmux#buf_add(bufid)
+    stopinsert
   endif
 endfunction
 
