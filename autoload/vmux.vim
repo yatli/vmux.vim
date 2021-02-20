@@ -318,7 +318,7 @@ function! vmux#buf_enter()
   let bufid = bufnr('%')
   if &buftype == 'terminal'
     if !has_key(g:vmux_term_modes, bufid)
-      g:vmux_term_modes[bufid] = 'i'
+      let g:vmux_term_modes[bufid] = 'i'
     endif
 
     if g:vmux_term_modes[bufid] == 'i'
